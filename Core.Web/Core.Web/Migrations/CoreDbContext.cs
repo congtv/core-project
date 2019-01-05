@@ -1,11 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Core.Model.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Core.Web.Migrations
 {
-    public class CoreDbContext :DbContext
+    public class CoreDbContext : IdentityDbContext
     {
-        public CoreDbContext() : base() { }
+        public CoreDbContext() : base()
+        {
+
+        }
+        public CoreDbContext(DbContextOptions<CoreDbContext> options) : base(options)
+        {
+
+        }
         public DbSet<ContactDetail> ContactDetails { get; set; }
         public DbSet<Error> Errors { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
@@ -26,7 +35,7 @@ namespace Core.Web.Migrations
         public DbSet<VisitorStatistic> VisitorStatistics { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySQL("Server=localhost;Port=3306;Database=CoreDb;Uid=root;Pwd=1234;");
+            //optionsBuilder.UseMySQL("Server=localhost;Port=3306;Database=CoreDb;Uid=root;Pwd=1234;");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +45,9 @@ namespace Core.Web.Migrations
                 .HasKey(x => new { x.TagID, x.ProductID });
             modelBuilder.Entity<PostTag>()
                 .HasKey(x => new { x.TagID, x.PostID });
+            modelBuilder.Entity<IdentityUserLogin<string>>().HasKey(t => new { t.LoginProvider, t.ProviderKey });
+            modelBuilder.Entity<IdentityUserRole<string>>().HasKey(t => new { t.UserId, t.RoleId });
+            modelBuilder.Entity<IdentityUserToken<string>>().HasKey(t => new { t.UserId, t.LoginProvider, t.Name });
         }
     }
 }
