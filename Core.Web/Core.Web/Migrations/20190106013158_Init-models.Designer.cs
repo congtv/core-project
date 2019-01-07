@@ -9,14 +9,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Core.Web.Migrations
 {
     [DbContext(typeof(CoreDbContext))]
-    [Migration("20190105104727_init-model")]
-    partial class initmodel
+    [Migration("20190106013158_Init-models")]
+    partial class Initmodels
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Core.Model.Models.ContactDetail", b =>
                 {
@@ -542,9 +543,8 @@ namespace Core.Web.Migrations
 
             modelBuilder.Entity("Core.Model.Models.VisitorStatistic", b =>
                 {
-                    b.Property<byte[]>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<byte[], byte[]>(v => default(byte[]), v => default(byte[]), new ConverterMappingHints(size: 16)));
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("IPAddress")
                         .HasMaxLength(50);

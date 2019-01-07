@@ -1,9 +1,10 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Core.Web.Migrations
 {
-    public partial class initmodel : Migration
+    public partial class Initmodels : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,7 +13,7 @@ namespace Core.Web.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 250, nullable: false),
                     Phone = table.Column<string>(maxLength: 50, nullable: true),
                     Email = table.Column<string>(maxLength: 250, nullable: true),
@@ -21,7 +22,7 @@ namespace Core.Web.Migrations
                     Other = table.Column<string>(nullable: true),
                     Lat = table.Column<double>(nullable: true),
                     Lng = table.Column<double>(nullable: true),
-                    Status = table.Column<short>(nullable: false)
+                    Status = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -33,7 +34,7 @@ namespace Core.Web.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Message = table.Column<string>(nullable: true),
                     StackTrace = table.Column<string>(nullable: true),
                     CreatedDate = table.Column<DateTime>(nullable: false)
@@ -48,12 +49,12 @@ namespace Core.Web.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 250, nullable: false),
                     Email = table.Column<string>(maxLength: 250, nullable: true),
                     Message = table.Column<string>(maxLength: 500, nullable: true),
                     CreatedDate = table.Column<DateTime>(nullable: false),
-                    Status = table.Column<short>(nullable: false)
+                    Status = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -77,7 +78,7 @@ namespace Core.Web.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -90,7 +91,7 @@ namespace Core.Web.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CustomerName = table.Column<string>(maxLength: 256, nullable: false),
                     CustomerAddress = table.Column<string>(maxLength: 256, nullable: false),
                     CustomerEmail = table.Column<string>(maxLength: 256, nullable: false),
@@ -100,7 +101,7 @@ namespace Core.Web.Migrations
                     CreatedDate = table.Column<DateTime>(nullable: true),
                     CreatedBy = table.Column<string>(nullable: true),
                     PaymentStatus = table.Column<string>(nullable: true),
-                    Status = table.Column<short>(nullable: false)
+                    Status = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -117,9 +118,9 @@ namespace Core.Web.Migrations
                     UpdatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     MetaKeyword = table.Column<string>(maxLength: 256, nullable: true),
                     MetaDescription = table.Column<string>(maxLength: 256, nullable: true),
-                    Status = table.Column<short>(nullable: false),
+                    Status = table.Column<bool>(nullable: false),
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 256, nullable: false),
                     Alias = table.Column<string>(maxLength: 256, nullable: false),
                     Content = table.Column<string>(nullable: true)
@@ -139,16 +140,16 @@ namespace Core.Web.Migrations
                     UpdatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     MetaKeyword = table.Column<string>(maxLength: 256, nullable: true),
                     MetaDescription = table.Column<string>(maxLength: 256, nullable: true),
-                    Status = table.Column<short>(nullable: false),
+                    Status = table.Column<bool>(nullable: false),
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 256, nullable: false),
                     Alias = table.Column<string>(maxLength: 256, nullable: false),
                     Description = table.Column<string>(maxLength: 500, nullable: true),
                     ParentID = table.Column<int>(nullable: true),
                     DisplayOrder = table.Column<int>(nullable: true),
                     Image = table.Column<string>(maxLength: 256, nullable: true),
-                    HomeFlag = table.Column<short>(nullable: true)
+                    HomeFlag = table.Column<bool>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -165,16 +166,16 @@ namespace Core.Web.Migrations
                     UpdatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     MetaKeyword = table.Column<string>(maxLength: 256, nullable: true),
                     MetaDescription = table.Column<string>(maxLength: 256, nullable: true),
-                    Status = table.Column<short>(nullable: false),
+                    Status = table.Column<bool>(nullable: false),
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 256, nullable: false),
                     Alias = table.Column<string>(maxLength: 256, nullable: false),
                     Description = table.Column<string>(maxLength: 500, nullable: true),
                     ParentID = table.Column<int>(nullable: true),
                     DisplayOrder = table.Column<int>(nullable: true),
                     Image = table.Column<string>(maxLength: 256, nullable: true),
-                    HomeFlag = table.Column<short>(nullable: true)
+                    HomeFlag = table.Column<bool>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -186,7 +187,7 @@ namespace Core.Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     RoleId = table.Column<string>(nullable: true),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -215,13 +216,13 @@ namespace Core.Web.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 256, nullable: false),
                     Description = table.Column<string>(maxLength: 256, nullable: true),
                     Image = table.Column<string>(maxLength: 256, nullable: true),
                     Url = table.Column<string>(maxLength: 256, nullable: true),
                     DisplayOrder = table.Column<int>(nullable: true),
-                    Status = table.Column<short>(nullable: false),
+                    Status = table.Column<bool>(nullable: false),
                     Content = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -247,7 +248,7 @@ namespace Core.Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<string>(nullable: true),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -292,15 +293,15 @@ namespace Core.Web.Migrations
                     NormalizedUserName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     NormalizedEmail = table.Column<string>(nullable: true),
-                    EmailConfirmed = table.Column<short>(nullable: false),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
                     PasswordHash = table.Column<string>(nullable: true),
                     SecurityStamp = table.Column<string>(nullable: true),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<string>(nullable: true),
-                    PhoneNumberConfirmed = table.Column<short>(nullable: false),
-                    TwoFactorEnabled = table.Column<short>(nullable: false),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
-                    LockoutEnabled = table.Column<short>(nullable: false),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -326,7 +327,7 @@ namespace Core.Web.Migrations
                 name: "VisitorStatistics",
                 columns: table => new
                 {
-                    ID = table.Column<byte[]>(nullable: false),
+                    ID = table.Column<Guid>(nullable: false),
                     VisitedDate = table.Column<DateTime>(nullable: false),
                     IPAddress = table.Column<string>(maxLength: 50, nullable: true)
                 },
@@ -340,13 +341,13 @@ namespace Core.Web.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 50, nullable: false),
                     URL = table.Column<string>(maxLength: 256, nullable: false),
                     DisplayOrder = table.Column<int>(nullable: true),
                     GroupID = table.Column<int>(nullable: false),
                     Target = table.Column<string>(maxLength: 10, nullable: true),
-                    Status = table.Column<short>(nullable: false)
+                    Status = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -369,17 +370,17 @@ namespace Core.Web.Migrations
                     UpdatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     MetaKeyword = table.Column<string>(maxLength: 256, nullable: true),
                     MetaDescription = table.Column<string>(maxLength: 256, nullable: true),
-                    Status = table.Column<short>(nullable: false),
+                    Status = table.Column<bool>(nullable: false),
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 256, nullable: false),
                     Alias = table.Column<string>(maxLength: 256, nullable: false),
                     CategoryID = table.Column<int>(nullable: false),
                     Image = table.Column<string>(maxLength: 256, nullable: true),
                     Description = table.Column<string>(maxLength: 500, nullable: true),
                     Content = table.Column<string>(nullable: true),
-                    HomeFlag = table.Column<short>(nullable: true),
-                    HotFlag = table.Column<short>(nullable: true),
+                    HomeFlag = table.Column<bool>(nullable: true),
+                    HotFlag = table.Column<bool>(nullable: true),
                     ViewCount = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -403,9 +404,9 @@ namespace Core.Web.Migrations
                     UpdatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     MetaKeyword = table.Column<string>(maxLength: 256, nullable: true),
                     MetaDescription = table.Column<string>(maxLength: 256, nullable: true),
-                    Status = table.Column<short>(nullable: false),
+                    Status = table.Column<bool>(nullable: false),
                     ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:AutoIncrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 256, nullable: false),
                     Alias = table.Column<string>(maxLength: 256, nullable: false),
                     CategoryID = table.Column<int>(nullable: false),
@@ -416,8 +417,8 @@ namespace Core.Web.Migrations
                     Warranty = table.Column<int>(nullable: true),
                     Description = table.Column<string>(maxLength: 500, nullable: true),
                     Content = table.Column<string>(nullable: true),
-                    HomeFlag = table.Column<short>(nullable: true),
-                    HotFlag = table.Column<short>(nullable: true),
+                    HomeFlag = table.Column<bool>(nullable: true),
+                    HotFlag = table.Column<bool>(nullable: true),
                     ViewCount = table.Column<int>(nullable: true),
                     Tags = table.Column<string>(nullable: true),
                     Quantity = table.Column<int>(nullable: false),

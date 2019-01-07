@@ -3,12 +3,41 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Core.Web.Repositories
 {
-    public class GenericRepository<T> where T : class
+    public interface IGenericRepository<T> where T : class
+    {
+        CoreDbContext DbContext { get; set; }
+
+        IEnumerable<T> GetAll();
+
+        IEnumerable<T> Search(Func<T, bool> predicate);
+
+        bool Exist();
+
+        bool Exist(Func<T, bool> predicate);
+
+        void Add(T entity);
+
+        void AddRange(IEnumerable<T> entities);
+
+        void Update(T entity);
+
+        void UpdateRange(IEnumerable<T> entities);
+
+        void Delete(T entity);
+
+        void DeleteRange(IEnumerable<T> entities);
+
+        void SaveChanges();
+
+        Task<bool> SaveChangesAsync();
+
+        void DetachAllEntities();
+    }
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         public CoreDbContext DbContext { get; set; }
 
