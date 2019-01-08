@@ -11,6 +11,9 @@ namespace Core.Web.Services
     public interface IUserService
     {
         IdentityUser Authenticate(string username, string password);
+        void Create(IdentityUser identityUser);
+        int Save();
+        Task<int> SaveAsync();
     }
     public class UserService : IUserService
     {
@@ -33,6 +36,7 @@ namespace Core.Web.Services
             // check if password is correct
             //if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
             PasswordHasher<IdentityUser> hasher = new PasswordHasher<IdentityUser>();
+
             if (hasher.VerifyHashedPassword(user, user.PasswordHash, password) != PasswordVerificationResult.Failed)
             {
                 return null;
@@ -42,6 +46,22 @@ namespace Core.Web.Services
             // authentication successful
             return user;
         }
+
+        public void Create(IdentityUser identityUser)
+        {
+            _userRepository.Add(identityUser);
+        }
+
+        public int Save()
+        {
+            return _userRepository.SaveChanges();
+        }
+
+        public Task<int> SaveAsync()
+        {
+            return _userRepository.SaveChangesAsync();
+        }
+
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             if (password == null) throw new ArgumentNullException("password");

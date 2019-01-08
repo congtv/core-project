@@ -1,4 +1,7 @@
+using Core.Web.Extension;
 using Core.Web.Migrations;
+using Core.Web.Models.Dto.Request;
+using Core.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -29,6 +32,9 @@ namespace Core.Web
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            // configure DI for application services
+            services.AddScoped<IUserService, UserService>();
+
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -48,6 +54,27 @@ namespace Core.Web
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+            #region Mapper
+            AutoMapper.Mapper.Initialize(cfg =>
+            {
+                cfg.CreateMap<UserLoginRequest, IdentityUser>();
+                cfg.CreateMap<UserRegisterRequest, IdentityUser>();
+                //cfg.CreateMap<MQuestion, QuestionDto>();
+                //cfg.CreateMap<MAnswer, AnswerDto>();
+                //cfg.CreateMap<TAnswerResult, AnswerResultDto>();
+
+                //cfg.CreateMap<AnswerResultDetailDto, TAnswerResultDetail>();
+                //cfg.CreateMap<AnswerResultDto, TAnswerResult>();
+
+                //cfg.CreateMap<MSchool, SchoolDto>();
+
+                //cfg.CreateMap<MComment, CommentDto>();
+
+                cfg.CreateMap<DeliveryQuestionSetDto, TDeliveryQuestionSet>();
+
+            });
+
+            #endregion
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

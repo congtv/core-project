@@ -1,4 +1,7 @@
-﻿using Core.Web.Services;
+﻿using AutoMapper;
+using Core.Web.Models.Dto.Request;
+using Core.Web.Models.Dto.Result;
+using Core.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,109 +23,130 @@ namespace Core.Web.Controllers
     {
         private IUserService _userService;
         private UserManager<IdentityUser> _userManager;
+        private IMapper _mapper;
+        private readonly IJwtFactory _jwtFactory;
+        private readonly JwtIssuerOptions _jwtOptions;
 
         public UsersController(
         IUserService userService,
-        UserManager<IdentityUser> userManager)
+        UserManager<IdentityUser> userManager,
+        IMapper mapper)
         {
             _userService = userService;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]UserDto userDto)
+        public IActionResult Authenticate([FromBody]UserLoginRequest userRequest)
         {
-            var user = _userService.Authenticate(userDto.Username, userDto.Password);
-            if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            if (!ModelState.IsValid)
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                return BadRequest(ModelState);
+            }
+
+            var identity = await GetClaimsIdentity(userRequest.UserName, credentials.Password);
+            if (identity == null)
             {
-                new Claim(ClaimTypes.Name, user.Id.ToString())
-            }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
+                return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
+            }
+
+            //var jwt = await Tokens.GenerateJwt(identity, _jwtFactory, credentials.UserName, _jwtOptions, new JsonSerializerSettings { Formatting = Formatting.Indented });
 
             // return basic user info (without password) and token to store client side
-            return Ok(new
+            return Ok(new UserLoginResult
             {
-                Id = user.Id,
-                Username = user.Username,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Token = tokenString
+                UserName = user.UserName,
+                AccessToken = tokenString
             });
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult Register([FromBody]UserDto userDto)
+        public async Task<IActionResult> Register([FromBody]UserRegisterRequest userRequest)
         {
             // map dto to entity
-            var user = _mapper.Map<User>(userDto);
+            var user = _mapper.Map<IdentityUser>(userRequest);
 
-            try
+            if (!ModelState.IsValid)
             {
-                // save 
-                _userService.Create(user, userDto.Password);
-                return Ok();
+                return BadRequest(ModelState);
             }
-            catch (AppException ex)
-            {
-                // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
-            }
+
+            var result = await _userManager.CreateAsync(user, userRequest.Password);
+
+            if (!result.Succeeded) return new BadRequestObjectResult(user.UserName);
+
+            _userService.Create(user);
+
+            _userService.Save();
+
+            return new OkObjectResult("Account created");
         }
 
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var users = _userService.GetAll();
-            var userDtos = _mapper.Map<IList<UserDto>>(users);
-            return Ok(userDtos);
-        }
+        //[HttpGet]
+        //public IActionResult GetAll()
+        //{
+        //    var users = _userService.GetAll();
+        //    var userDtos = _mapper.Map<IList<UserDto>>(users);
+        //    return Ok(userDtos);
+        //}
 
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
-        {
-            var user = _userService.GetById(id);
-            var userDto = _mapper.Map<UserDto>(user);
-            return Ok(userDto);
-        }
+        //[HttpGet("{id}")]
+        //public IActionResult GetById(int id)
+        //{
+        //    var user = _userService.GetById(id);
+        //    var userDto = _mapper.Map<UserDto>(user);
+        //    return Ok(userDto);
+        //}
 
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody]UserDto userDto)
-        {
-            // map dto to entity and set id
-            var user = _mapper.Map<User>(userDto);
-            user.Id = id;
+        //[HttpPut("{id}")]
+        //public IActionResult Update(int id, [FromBody]UserDto userDto)
+        //{
+        //    // map dto to entity and set id
+        //    var user = _mapper.Map<User>(userDto);
+        //    user.Id = id;
 
-            try
+        //    try
+        //    {
+        //        // save 
+        //        _userService.Update(user, userDto.Password);
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // return error message if there was an exception
+        //        return BadRequest(new { message = ex.Message });
+        //    }
+        //}
+
+        //[HttpDelete("{id}")]
+        //public IActionResult Delete(int id)
+        //{
+        //    _userService.Delete(id);
+        //    return Ok();
+        //}
+
+        private async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)
+        {
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+                return await Task.FromResult<ClaimsIdentity>(null);
+
+            // get the user to verifty
+            var userToVerify = await _userManager.FindByNameAsync(userName);
+
+            if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
+
+            // check the credentials
+            if (await _userManager.CheckPasswordAsync(userToVerify, password))
             {
-                // save 
-                _userService.Update(user, userDto.Password);
-                return Ok();
+                return await Task.FromResult(_jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id));
             }
-            catch (AppException ex)
-            {
-                // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
-            }
-        }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            _userService.Delete(id);
-            return Ok();
+            // Credentials are invalid, or account doesn't exist
+            return await Task.FromResult<ClaimsIdentity>(null);
         }
     }
 }

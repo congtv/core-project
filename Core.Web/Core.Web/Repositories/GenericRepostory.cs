@@ -31,9 +31,9 @@ namespace Core.Web.Repositories
 
         void DeleteRange(IEnumerable<T> entities);
 
-        void SaveChanges();
+        int SaveChanges();
 
-        Task<bool> SaveChangesAsync();
+        Task<int> SaveChangesAsync();
 
         void DetachAllEntities();
     }
@@ -112,14 +112,14 @@ namespace Core.Web.Repositories
             DbContext.Set<T>().RemoveRange(entities);
         }
 
-        public void SaveChanges()
+        public int SaveChanges()
         {
-            DbContext.SaveChanges();
+            return DbContext.SaveChanges();
         }
 
-        public async Task<bool> SaveChangesAsync()
+        public async Task<int> SaveChangesAsync()
         {
-            bool result = await DbContext.SaveChangesAsync() > 0;
+            int result = await DbContext.SaveChangesAsync();
             DetachAllEntities();
             return result;
         }
