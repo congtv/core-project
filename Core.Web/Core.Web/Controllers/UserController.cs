@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using Core.Web.Auth;
-using Core.Web.Helper;
+using Core.Web.Models.Entities;
 using Core.Web.Models.Entities.Dto.Request;
 using Core.Web.Models.Entities.Dto.Result;
 using Core.Web.Services;
@@ -21,63 +20,66 @@ namespace Core.Web.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private IUserService _userService;
-        private UserManager<IdentityUser> _userManager;
-        private IMapper _mapper;
-        private readonly IJwtFactory _jwtFactory;
-        private readonly JwtIssuerOptions _jwtOptions;
+        private IUserService userService;
+        private UserManager<IdentityUser> userManager;
 
         public UsersController(
         IUserService userService,
-        UserManager<IdentityUser> userManager,
-        IMapper mapper)
+        UserManager<IdentityUser> userManager)
         {
-            _userService = userService;
-            _userManager = userManager;
-            _mapper = mapper;
+            this.userService = userService;
+            this.userManager = userManager;
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody]UserLoginRequest userRequest)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (string.IsNullOrWhiteSpace(userRequest.UserName) || string.IsNullOrWhiteSpace(userRequest.Password))
+                return new UnprocessableEntityResult();
 
-            var identity = await GetClaimsIdentity(userRequest.UserName, userRequest.Password);
-            if (identity == null)
-            {
-                return BadRequest();
-            }
+            // get the user to verifty
+            var userToVerify = await userManager.FindByNameAsync(userRequest.UserName);
 
-            // return basic user info (without password) and token to store client side
-            var jwt = await Tokens.GenerateJwt(identity, _jwtFactory, userRequest.UserName, _jwtOptions, new JsonSerializerSettings { Formatting = Formatting.Indented });
-            return new OkObjectResult(jwt);
+            if (userToVerify == null) return new UnprocessableEntityResult();
+
+            // check the credentials
+            if (await userManager.CheckPasswordAsync(userToVerify, userRequest.Password))
+            {
+                return new OkObjectResult(new UserLoginResult()
+                {
+                    UserName = userRequest.UserName,
+                    AccessToken = userService.GenerateAccessToken(userRequest.UserName)
+                });
+            }
+            return new BadRequestResult();
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]UserRegisterRequest userRequest)
         {
-            var user = _mapper.Map<IdentityUser>(userRequest);
+            var identityUser = Mapper.Map<IdentityUser>(userRequest);
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _userManager.CreateAsync(user, userRequest.Password);
+            var result = await userManager.CreateAsync(identityUser, userRequest.Password);
 
-            if (!result.Succeeded) return new BadRequestObjectResult(user.UserName);
+            if (!result.Succeeded) return new BadRequestObjectResult(identityUser.UserName);
 
-            _userService.Create(user);
+            userService.Create(new Customer()
+            {
+                Id = Guid.NewGuid(),
+                IdentityUserId = identityUser.Id,
+            });
 
-            _userService.Save();
+            userService.Save();
 
             return new OkObjectResult("Account created");
         }
@@ -125,24 +127,5 @@ namespace Core.Web.Controllers
         //    return Ok();
         //}
 
-        private async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)
-        {
-            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
-                return await Task.FromResult<ClaimsIdentity>(null);
-
-            // get the user to verifty
-            var userToVerify = await _userManager.FindByNameAsync(userName);
-
-            if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
-
-            // check the credentials
-            if (await _userManager.CheckPasswordAsync(userToVerify, password))
-            {
-                return await Task.FromResult(_jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id));
-            }
-
-            // Credentials are invalid, or account doesn't exist
-            return await Task.FromResult<ClaimsIdentity>(null);
-        }
     }
 }

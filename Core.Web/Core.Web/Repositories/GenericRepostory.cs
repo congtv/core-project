@@ -9,7 +9,7 @@ namespace Core.Web.Repositories
 {
     public interface IGenericRepository<T> where T : class
     {
-        CoreDbContext DbContext { get; set; }
+        CoreDbContext DbContext { get; }
 
         IEnumerable<T> GetAll();
 
@@ -39,8 +39,11 @@ namespace Core.Web.Repositories
     }
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        public CoreDbContext DbContext { get; set; }
-
+        public CoreDbContext DbContext { get; private set; }
+        public GenericRepository(CoreDbContext dbContext)
+        {
+            this.DbContext = dbContext;
+        }
         public IEnumerable<T> GetAll()
         {
             return DbContext.Set<T>().AsQueryable();

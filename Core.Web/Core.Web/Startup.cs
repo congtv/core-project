@@ -1,7 +1,9 @@
-using Core.Web.Auth;
+using AutoMapper;
 using Core.Web.Migrations;
 using Core.Web.Models.Entities.Dto.Request;
+using Core.Web.Repositories;
 using Core.Web.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +12,9 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Swagger;
+using System.Text;
 
 namespace Core.Web
 {
@@ -25,23 +30,75 @@ namespace Core.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            #region Common
             services.AddDbContext<CoreDbContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<CoreDbContext>();
+               options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddCors();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            // configure singleton
-            services.AddSingleton<IJwtFactory, JwtFactory>();
-
-            // configure DI for application services
-            services.AddScoped<IUserService, UserService>();
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+            #endregion
+
+            #region Authentication
+            var key = Encoding.ASCII.GetBytes(Configuration["Jwt:Key"]);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
+            #endregion
+
+            #region swagger
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Core API", Version = "v1" });
+            });
+            #endregion
+
+            #region DI
+            // configure DI for application repository
+            services.AddScoped<IUserRepository, UserRepository>();
+            // configure DI for application services
+            services.AddScoped<IUserService, UserService>();
+
+            //Other
+            services.AddScoped<IMapper, Mapper>();
+            #endregion
+
+            #region Identity
+            var builder = services.AddIdentityCore<IdentityUser>(o =>
+            {
+                // configure identity options
+                o.Password.RequireDigit = false;
+                o.Password.RequireLowercase = false;
+                o.Password.RequireUppercase = false;
+                o.Password.RequireNonAlphanumeric = false;
+                o.Password.RequiredLength = 6;
+            });
+            builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
+
+            builder.AddEntityFrameworkStores<CoreDbContext>().AddDefaultTokenProviders();
+            #endregion
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +107,15 @@ namespace Core.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                // Enable middleware to serve generated Swagger as a JSON endpoint.
+                app.UseSwagger();
+
+                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+                // specifying the Swagger JSON endpoint.
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MathApp API v1");
+                });
             }
             else
             {
@@ -61,22 +127,16 @@ namespace Core.Web
             {
                 cfg.CreateMap<UserLoginRequest, IdentityUser>();
                 cfg.CreateMap<UserRegisterRequest, IdentityUser>();
-                //cfg.CreateMap<MQuestion, QuestionDto>();
-                //cfg.CreateMap<MAnswer, AnswerDto>();
-                //cfg.CreateMap<TAnswerResult, AnswerResultDto>();
-
-                //cfg.CreateMap<AnswerResultDetailDto, TAnswerResultDetail>();
-                //cfg.CreateMap<AnswerResultDto, TAnswerResult>();
-
-                //cfg.CreateMap<MSchool, SchoolDto>();
-
-                //cfg.CreateMap<MComment, CommentDto>();
-
-                //cfg.CreateMap<DeliveryQuestionSetDto, TDeliveryQuestionSet>();
 
             });
 
             #endregion
+
+            app.UseCors(x => x
+              .AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials());
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

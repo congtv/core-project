@@ -33,10 +33,10 @@ namespace Core.Web.Migrations
         public DbSet<Slide> Slides { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<VisitorStatistic> VisitorStatistics { get; set; }
-        public DbSet<User> MyProperty { get; set; }
+        public DbSet<Customer> Customers { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseMySQL("Server=localhost;Port=3306;Database=CoreDb;Uid=root;Pwd=1234;");
+            
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

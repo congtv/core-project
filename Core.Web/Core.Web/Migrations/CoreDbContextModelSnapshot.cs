@@ -51,6 +51,37 @@ namespace Core.Web.Migrations
                     b.ToTable("ContactDetails");
                 });
 
+            modelBuilder.Entity("Core.Web.Models.Entities.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long?>("FacebookId");
+
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("Gender");
+
+                    b.Property<string>("IdentityUserId")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("LastName")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("PictureUrl")
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdentityUserId");
+
+                    b.ToTable("Customers");
+                });
+
             modelBuilder.Entity("Core.Web.Models.Entities.Error", b =>
                 {
                     b.Property<int>("ID")
@@ -679,6 +710,13 @@ namespace Core.Web.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("UserTokens");
+                });
+
+            modelBuilder.Entity("Core.Web.Models.Entities.Customer", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("IdentityUserId");
                 });
 
             modelBuilder.Entity("Core.Web.Models.Entities.Menu", b =>
