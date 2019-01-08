@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Core.Web.Models.Abstract
+namespace Core.Web.Models.Entities.Abstract
 {
     public interface IAuditable
     {

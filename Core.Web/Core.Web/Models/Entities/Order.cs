@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Core.Model.Models
+namespace Core.Web.Models.Entities
 {
     [Table("Orders")]
     public class Order

@@ -1,6 +1,6 @@
-using Core.Web.Extension;
+using Core.Web.Auth;
 using Core.Web.Migrations;
-using Core.Web.Models.Dto.Request;
+using Core.Web.Models.Entities.Dto.Request;
 using Core.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,6 +31,8 @@ namespace Core.Web
                 .AddEntityFrameworkStores<CoreDbContext>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            // configure singleton
+            services.AddSingleton<IJwtFactory, JwtFactory>();
 
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
@@ -70,7 +72,7 @@ namespace Core.Web
 
                 //cfg.CreateMap<MComment, CommentDto>();
 
-                cfg.CreateMap<DeliveryQuestionSetDto, TDeliveryQuestionSet>();
+                //cfg.CreateMap<DeliveryQuestionSetDto, TDeliveryQuestionSet>();
 
             });
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Core.Web.Models.Dto.Request
+namespace Core.Web.Models.Entities.Dto.Request
 {
     public class UserRegisterRequest
     {

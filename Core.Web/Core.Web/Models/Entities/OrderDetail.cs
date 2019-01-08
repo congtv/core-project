@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Core.Model.Models
+namespace Core.Web.Models.Entities
 {
     [Table("OrderDetails")]
     public class OrderDetail

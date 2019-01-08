@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Core.Web.Models.Abstract;
+using Core.Web.Models.Entities.Abstract;
 
-namespace Core.Model.Models
+namespace Core.Web.Models.Entities
 {
     [Table("PostCategories")]
     public class PostCategory : Auditable

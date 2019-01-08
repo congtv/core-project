@@ -19,7 +19,7 @@ namespace Core.Web.Migrations
                 .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Core.Model.Models.ContactDetail", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.ContactDetail", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -53,7 +53,7 @@ namespace Core.Web.Migrations
                     b.ToTable("ContactDetails");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Error", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Error", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -69,7 +69,7 @@ namespace Core.Web.Migrations
                     b.ToTable("Errors");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Feedback", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Feedback", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -93,7 +93,7 @@ namespace Core.Web.Migrations
                     b.ToTable("Feedbacks");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Footer", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Footer", b =>
                 {
                     b.Property<string>("ID")
                         .ValueGeneratedOnAdd()
@@ -107,7 +107,7 @@ namespace Core.Web.Migrations
                     b.ToTable("Footers");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Menu", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Menu", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -136,7 +136,7 @@ namespace Core.Web.Migrations
                     b.ToTable("Menus");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.MenuGroup", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.MenuGroup", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -150,7 +150,7 @@ namespace Core.Web.Migrations
                     b.ToTable("MenuGroups");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Order", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Order", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -191,7 +191,7 @@ namespace Core.Web.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.OrderDetail", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.OrderDetail", b =>
                 {
                     b.Property<int>("OrderID");
 
@@ -208,7 +208,7 @@ namespace Core.Web.Migrations
                     b.ToTable("OrderDetails");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Page", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Page", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -246,7 +246,7 @@ namespace Core.Web.Migrations
                     b.ToTable("Pages");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Post", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Post", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -300,7 +300,7 @@ namespace Core.Web.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.PostCategory", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.PostCategory", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -348,7 +348,7 @@ namespace Core.Web.Migrations
                     b.ToTable("PostCategories");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.PostTag", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.PostTag", b =>
                 {
                     b.Property<string>("TagID")
                         .HasMaxLength(50);
@@ -362,7 +362,7 @@ namespace Core.Web.Migrations
                     b.ToTable("PostTags");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Product", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Product", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -431,7 +431,7 @@ namespace Core.Web.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.ProductCategory", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.ProductCategory", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -479,7 +479,7 @@ namespace Core.Web.Migrations
                     b.ToTable("ProductCategories");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.ProductTag", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.ProductTag", b =>
                 {
                     b.Property<string>("TagID")
                         .HasMaxLength(50);
@@ -493,7 +493,7 @@ namespace Core.Web.Migrations
                     b.ToTable("ProductTags");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Slide", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Slide", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
@@ -522,7 +522,7 @@ namespace Core.Web.Migrations
                     b.ToTable("Slides");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Tag", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Tag", b =>
                 {
                     b.Property<string>("ID")
                         .ValueGeneratedOnAdd()
@@ -541,7 +541,7 @@ namespace Core.Web.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.VisitorStatistic", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.VisitorStatistic", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd();
@@ -683,64 +683,64 @@ namespace Core.Web.Migrations
                     b.ToTable("UserTokens");
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Menu", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Menu", b =>
                 {
-                    b.HasOne("Core.Model.Models.MenuGroup", "MenuGroup")
+                    b.HasOne("Core.Web.Models.Entities.MenuGroup", "MenuGroup")
                         .WithMany("Menus")
                         .HasForeignKey("GroupID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Core.Model.Models.OrderDetail", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.OrderDetail", b =>
                 {
-                    b.HasOne("Core.Model.Models.Order", "Order")
+                    b.HasOne("Core.Web.Models.Entities.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Core.Model.Models.Product", "Product")
+                    b.HasOne("Core.Web.Models.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Post", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Post", b =>
                 {
-                    b.HasOne("Core.Model.Models.PostCategory", "PostCategory")
+                    b.HasOne("Core.Web.Models.Entities.PostCategory", "PostCategory")
                         .WithMany("Posts")
                         .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Core.Model.Models.PostTag", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.PostTag", b =>
                 {
-                    b.HasOne("Core.Model.Models.Post", "Post")
+                    b.HasOne("Core.Web.Models.Entities.Post", "Post")
                         .WithMany("PostTags")
                         .HasForeignKey("PostID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Core.Model.Models.Tag", "Tag")
+                    b.HasOne("Core.Web.Models.Entities.Tag", "Tag")
                         .WithMany()
                         .HasForeignKey("TagID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Core.Model.Models.Product", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.Product", b =>
                 {
-                    b.HasOne("Core.Model.Models.ProductCategory", "ProductCategory")
+                    b.HasOne("Core.Web.Models.Entities.ProductCategory", "ProductCategory")
                         .WithMany("Products")
                         .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Core.Model.Models.ProductTag", b =>
+            modelBuilder.Entity("Core.Web.Models.Entities.ProductTag", b =>
                 {
-                    b.HasOne("Core.Model.Models.Product", "Product")
+                    b.HasOne("Core.Web.Models.Entities.Product", "Product")
                         .WithMany("ProductTags")
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Core.Model.Models.Tag", "Tag")
+                    b.HasOne("Core.Web.Models.Entities.Tag", "Tag")
                         .WithMany()
                         .HasForeignKey("TagID")
                         .OnDelete(DeleteBehavior.Cascade);

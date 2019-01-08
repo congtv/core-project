@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Core.Web.Models.Abstract;
 
-namespace Core.Model.Models
+namespace Core.Web.Models.Entities
 {
-    [Table("Pages")]
-    public class Page : Auditable
+    [Table("Slides")]
+    public class Slide
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,9 +14,18 @@ namespace Core.Model.Models
         [MaxLength(256)]
         public string Name { set; get; }
 
-        [Required]
         [MaxLength(256)]
-        public string Alias { set; get; }
+        public string Description { set; get; }
+
+        [MaxLength(256)]
+        public string Image { set; get; }
+
+        [MaxLength(256)]
+        public string Url { set; get; }
+
+        public int? DisplayOrder { set; get; }
+
+        public bool Status { set; get; }
 
         public string Content { set; get; }
     }

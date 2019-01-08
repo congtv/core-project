@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
-using Core.Web.Models.Dto.Request;
-using Core.Web.Models.Dto.Result;
+using Core.Web.Auth;
+using Core.Web.Helper;
+using Core.Web.Models.Entities.Dto.Request;
+using Core.Web.Models.Entities.Dto.Result;
 using Core.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -38,36 +41,29 @@ namespace Core.Web.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]UserLoginRequest userRequest)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody]UserLoginRequest userRequest)
         {
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var identity = await GetClaimsIdentity(userRequest.UserName, credentials.Password);
+            var identity = await GetClaimsIdentity(userRequest.UserName, userRequest.Password);
             if (identity == null)
             {
-                return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
+                return BadRequest();
             }
 
-            //var jwt = await Tokens.GenerateJwt(identity, _jwtFactory, credentials.UserName, _jwtOptions, new JsonSerializerSettings { Formatting = Formatting.Indented });
-
             // return basic user info (without password) and token to store client side
-            return Ok(new UserLoginResult
-            {
-                UserName = user.UserName,
-                AccessToken = tokenString
-            });
+            var jwt = await Tokens.GenerateJwt(identity, _jwtFactory, userRequest.UserName, _jwtOptions, new JsonSerializerSettings { Formatting = Formatting.Indented });
+            return new OkObjectResult(jwt);
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]UserRegisterRequest userRequest)
         {
-            // map dto to entity
             var user = _mapper.Map<IdentityUser>(userRequest);
 
             if (!ModelState.IsValid)

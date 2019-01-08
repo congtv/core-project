@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Core.Web.Models.Dto.Request
+namespace Core.Web.Models.Entities.Dto.Request
 {
     public class UserLoginRequest
     {

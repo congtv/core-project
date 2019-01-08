@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Core.Web.Models.Dto.Result
+namespace Core.Web.Models.Entities.Dto.Result
 {
     public class UserLoginResult
     {
