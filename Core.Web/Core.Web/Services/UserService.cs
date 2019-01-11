@@ -17,6 +17,8 @@ namespace Core.Web.Services
     {
         void Create(Customer customer);
         string GenerateAccessToken(string userName);
+        void Update(Customer customer);
+        void Delete(Guid guid);
         int Save();
         Task<int> SaveAsync();
     }
@@ -61,6 +63,24 @@ namespace Core.Web.Services
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public void Update(Customer customer)
+        {
+            var user = _userRepository.Search(c => c.Id == customer.Id).FirstOrDefault();
+            if (user != null)
+            {
+                _userRepository.Update(user);
+            }
+        }
+
+        public void Delete(Guid guid)
+        {
+            var user = _userRepository.Search(c => c.Id == guid).FirstOrDefault();
+            if (user != null)
+            {
+                _userRepository.Delete(user);
+            }
         }
     }
 }

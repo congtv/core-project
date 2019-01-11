@@ -83,7 +83,7 @@ namespace Core.Web.Repositories
             DbContext.Set<T>().AddRange(entities);
         }
 
-        public void Update(T entity)
+        public virtual void Update(T entity)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -99,7 +99,7 @@ namespace Core.Web.Repositories
             DbContext.Set<T>().UpdateRange(entities);
         }
 
-        public void Delete(T entity)
+        public virtual void Delete(T entity)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));

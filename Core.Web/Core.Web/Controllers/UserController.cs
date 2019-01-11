@@ -44,7 +44,8 @@ namespace Core.Web.Controllers
             // get the user to verifty
             var userToVerify = await userManager.FindByNameAsync(userRequest.UserName);
 
-            if (userToVerify == null) return new UnprocessableEntityResult();
+            if (userToVerify == null)
+                return new UnprocessableEntityResult();
 
             // check the credentials
             if (await userManager.CheckPasswordAsync(userToVerify, userRequest.Password))
@@ -71,7 +72,8 @@ namespace Core.Web.Controllers
 
             var result = await userManager.CreateAsync(identityUser, userRequest.Password);
 
-            if (!result.Succeeded) return new BadRequestObjectResult(identityUser.UserName);
+            if (!result.Succeeded)
+                return new BadRequestObjectResult(identityUser.UserName);
 
             userService.Create(new Customer()
             {
@@ -83,49 +85,5 @@ namespace Core.Web.Controllers
 
             return new OkObjectResult("Account created");
         }
-
-        //[HttpGet]
-        //public IActionResult GetAll()
-        //{
-        //    var users = _userService.GetAll();
-        //    var userDtos = _mapper.Map<IList<UserDto>>(users);
-        //    return Ok(userDtos);
-        //}
-
-        //[HttpGet("{id}")]
-        //public IActionResult GetById(int id)
-        //{
-        //    var user = _userService.GetById(id);
-        //    var userDto = _mapper.Map<UserDto>(user);
-        //    return Ok(userDto);
-        //}
-
-        //[HttpPut("{id}")]
-        //public IActionResult Update(int id, [FromBody]UserDto userDto)
-        //{
-        //    // map dto to entity and set id
-        //    var user = _mapper.Map<User>(userDto);
-        //    user.Id = id;
-
-        //    try
-        //    {
-        //        // save 
-        //        _userService.Update(user, userDto.Password);
-        //        return Ok();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // return error message if there was an exception
-        //        return BadRequest(new { message = ex.Message });
-        //    }
-        //}
-
-        //[HttpDelete("{id}")]
-        //public IActionResult Delete(int id)
-        //{
-        //    _userService.Delete(id);
-        //    return Ok();
-        //}
-
     }
 }

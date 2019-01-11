@@ -114,7 +114,7 @@ namespace Core.Web
                 // specifying the Swagger JSON endpoint.
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MathApp API v1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Core Web v1");
                 });
             }
             else
