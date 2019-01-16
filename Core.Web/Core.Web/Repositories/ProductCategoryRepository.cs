@@ -22,7 +22,7 @@ namespace Core.Web.Repositories
 
         public IEnumerable<ProductCategory> Filter(IEnumerable<Filters> filters)
         {
-            return DbContext.Set<ProductCategory>().AddFilter(DbContext,filters);
+            return DbContext.Set<ProductCategory>().AddFilter(filters);
         }
     }
 }

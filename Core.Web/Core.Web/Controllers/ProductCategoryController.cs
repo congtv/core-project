@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Core.Web.Models.Entities;
 using Core.Web.Models.ModelsHelper;
 using Core.Web.Repositories;
 using Core.Web.Services;
@@ -17,9 +19,11 @@ namespace Core.Web.Controllers
     public class ProductCategoryController : ControllerBase
     {
         IProductCategoryService productCategoryService;
-        public ProductCategoryController(IProductCategoryService productCategoryService)
+        IProductCategoryRepository productCategoryRepository;
+        public ProductCategoryController(IProductCategoryService productCategoryService, IProductCategoryRepository productCategoryRepository)
         {
             this.productCategoryService = productCategoryService;
+            this.productCategoryRepository = productCategoryRepository;
         }
 
         [Route("getall")]
@@ -30,12 +34,13 @@ namespace Core.Web.Controllers
             {
                 new Filters()
                 {
-                    Attribute = "Name",
+                    Attribute = "ID",
                     Values = new List<string>(){ "Phao hoa" },
-                    Operator = Operator.Equals
+                    Operator = Operator.NotIn
                 }
             };
-            var productCategories = productCategoryService.Filter(filters);
+
+            var productCategories = productCategoryService.Filter(filters).ToList();
             return new OkObjectResult(productCategories);
         }
     }

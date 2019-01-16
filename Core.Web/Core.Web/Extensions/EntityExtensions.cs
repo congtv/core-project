@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -11,22 +12,70 @@ namespace Core.Web.Extensions
 {
     public static class EntityExtensions
     {
-        public static IQueryable<T> AddFilter<T>(this DbSet<T> entity, DbContext dbContext,IEnumerable<Filters> filters) where T : class
+        public static IQueryable<T> AddFilter<T>(this IQueryable<T> query,IEnumerable<Filters> filters) where T : class, new()
         {
-            var query = dbContext.Set<T>();
-            foreach(var filter in filters)
+            T t = new T();
+            foreach (var filter in filters)
             {
                 var property = filter.Attribute;
-                dbContext.Set<T>().Where(x => x.GetValueByName<T>(filter.Attribute) == filter.Values);
+
+                if (t.Validate(filter))
+                {
+                    if(filter.Operator == Operator.In)
+                    {
+                        query = query.Where("@0.Contains(@1)", property, filter.Values.First());
+                        var list = query.ToList();
+                    }
+                    if(filter.Operator == Operator.NotIn)
+                    {
+                        var format = $"!{property}.Contains(\"{filter.Values.First()}\")";
+                        query = query.Where(format);
+                        var list = query.ToList();
+                    }
+                    else
+                    {
+                        var format = $"{property}.Contains(\"{filter.Values.First()}\")";
+                        query = query.Where(format);
+                        var list = query.ToList();
+                    }
+                }
             }
-            return query.AsQueryable<T>();
+            return query;
         }
 
-        public static object GetValueByName<T>(this T obj, string propertyName) where T : class
+        public static bool Validate(this object obj, Filters filter)
         {
-            PropertyInfo prop = typeof(T).GetProperty(propertyName);
-            return prop.GetValue(obj);
+            bool ret = true;
+            if(obj.GetType().GetProperty(filter.Attribute) == null)
+            {
+                return false;
+            }
 
+            if (filter.Values.Count() == 0)
+                return false;
+            if(filter.Values.Count() == 1)
+            {
+                var type = obj.GetType().GetProperty(filter.Attribute).PropertyType;
+                if(!type.TryParse(filter.Values.First()))
+                {
+                    return false;
+                }
+            }
+            else
+            {
+
+            }
+
+            return ret;
+        }
+        private static bool TryParse(this Type type, string value)
+        {
+            if(type == typeof(Int32))
+            {
+                if (Int32.TryParse(value, out int result))
+                    return true;
+            }
+            return false;
         }
     }
 }
