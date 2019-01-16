@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Web.Extensions;
 using Core.Web.Migrations;
 using Core.Web.Models.Entities;
+using Core.Web.Models.ModelsHelper;
 
 namespace Core.Web.Repositories
 {
     public interface IProductCategoryRepository : IGenericRepository<ProductCategory>
     {
-        IEnumerable<ProductCategory> Filter(string filters);
+        IEnumerable<ProductCategory> Filter(IEnumerable<Filters> filters);
     }
     public class ProductCategoryRepository : GenericRepository<ProductCategory>, IProductCategoryRepository
     {
@@ -18,9 +20,9 @@ namespace Core.Web.Repositories
 
         }
 
-        public IEnumerable<ProductCategory> Filter(string filters)
+        public IEnumerable<ProductCategory> Filter(IEnumerable<Filters> filters)
         {
-
+            return DbContext.Set<ProductCategory>().AddFilter(DbContext,filters);
         }
     }
 }

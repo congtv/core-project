@@ -76,10 +76,11 @@ namespace Core.Web
 
             #region DI
             // configure DI for application repository
-            services.AddScoped<IUserRepository, UserRepository>();
+            //services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
-
+            services.AddScoped<IProductCategoryService, ProductCategoryService>();
             //Other
             services.AddScoped<IMapper, Mapper>();
             #endregion

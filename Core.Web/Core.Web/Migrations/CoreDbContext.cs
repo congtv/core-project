@@ -2,6 +2,7 @@
 using Core.Web.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace Core.Web.Migrations
 {
@@ -40,6 +41,15 @@ namespace Core.Web.Migrations
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ProductCategory>().HasData(
+                    new ProductCategory()
+                    {
+                        ID = 1,
+                        Alias = "phao-hoa",
+                        Name = "Phao Hoa",
+                        CreatedDate = DateTime.Now,
+                    }
+                );
             modelBuilder.Entity<OrderDetail>()
             .HasKey(t => new { t.OrderID, t.ProductID });
             modelBuilder.Entity<ProductTag>()

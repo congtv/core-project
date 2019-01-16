@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using Core.Web.Models.ModelsHelper;
 using Microsoft.EntityFrameworkCore;
@@ -10,20 +11,22 @@ namespace Core.Web.Extensions
 {
     public static class EntityExtensions
     {
-        public static IQueryable AddFilter<T>(this DbSet<T> entity, DbContext dbContext,IEnumerable<Filters> filters) where T : class
+        public static IQueryable<T> AddFilter<T>(this DbSet<T> entity, DbContext dbContext,IEnumerable<Filters> filters) where T : class
         {
-            IQueryable query = dbContext.Set<T>();
+            var query = dbContext.Set<T>();
             foreach(var filter in filters)
             {
                 var property = filter.Attribute;
-                //dbContext.Set<T>().Where(x => )
+                dbContext.Set<T>().Where(x => x.GetValueByName<T>(filter.Attribute) == filter.Values);
             }
-            return query;
+            return query.AsQueryable<T>();
         }
-        public static IQueryable GetTypeOfX<T>(this DbSet<T> entity,Expression<Func<T, bool>> where) where T : class
+
+        public static object GetValueByName<T>(this T obj, string propertyName) where T : class
         {
-            return null;
-            //return this.Context.MyTypeOfXes.Where(where);
+            PropertyInfo prop = typeof(T).GetProperty(propertyName);
+            return prop.GetValue(obj);
+
         }
     }
 }
