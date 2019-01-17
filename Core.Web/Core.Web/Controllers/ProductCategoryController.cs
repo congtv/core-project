@@ -28,20 +28,10 @@ namespace Core.Web.Controllers
 
         [Route("getall")]
         [AllowAnonymous]
-        public IActionResult GetAll(string search)
+        public IActionResult GetAll()
         {
-            List<Filters> filters = new List<Filters>()
-            {
-                new Filters()
-                {
-                    Attribute = "ID",
-                    Values = new List<string>(){ "Phao hoa" },
-                    Operator = Operator.NotIn
-                }
-            };
-
-            var productCategories = productCategoryService.Filter(filters).ToList();
-            return new OkObjectResult(productCategories);
+            var list = productCategoryService.GetAll();
+            return new OkObjectResult(list);
         }
     }
 }

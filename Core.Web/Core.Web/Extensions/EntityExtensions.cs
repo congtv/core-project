@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
@@ -12,70 +13,212 @@ namespace Core.Web.Extensions
 {
     public static class EntityExtensions
     {
-        public static IQueryable<T> AddFilter<T>(this IQueryable<T> query,IEnumerable<Filters> filters) where T : class, new()
+        public static IQueryable<T> AddFilter<T>(this IQueryable<T> query, IEnumerable<Filters> filters) where T : class, new()
         {
-            T t = new T();
+            T instance = new T();
             foreach (var filter in filters)
             {
                 var property = filter.Attribute;
 
-                if (t.Validate(filter))
+                var type = instance.GetType().GetProperty(property).PropertyType;
+
+                var underlyingType = Nullable.GetUnderlyingType(type);
+
+                if (underlyingType != null)
+                    type = underlyingType;
+
+                if (type == typeof(int))
                 {
-                    if(filter.Operator == Operator.In)
+                    bool try1 = int.TryParse(filter.Values.First(), out int value1);
+                    bool try2 = int.TryParse(filter.Values.Last(), out int value2);
+                    if (try1 && try2)
                     {
-                        query = query.Where("@0.Contains(@1)", property, filter.Values.First());
-                        var list = query.ToList();
+                        query.CreateQuery(property, filter.Operator, value1, value2);
                     }
-                    if(filter.Operator == Operator.NotIn)
+                }
+                else if (type == typeof(double))
+                {
+                    bool try1 = double.TryParse(filter.Values.First(), out double value1);
+                    bool try2 = double.TryParse(filter.Values.Last(), out double value2);
+                    if (try1 && try2)
                     {
-                        var format = $"!{property}.Contains(\"{filter.Values.First()}\")";
-                        query = query.Where(format);
-                        var list = query.ToList();
+                        query.CreateQuery(property, filter.Operator, value1, value2);
                     }
-                    else
-                    {
-                        var format = $"{property}.Contains(\"{filter.Values.First()}\")";
-                        query = query.Where(format);
-                        var list = query.ToList();
-                    }
+                }
+                else if (type == typeof(bool))
+                {
+                    string value = property == "1" ? "true" : property == "false" ? "false" : property;
+                    query.CreateQuery(property, filter.Operator, value);
+                }
+                else
+                {
+                    query.CreateQuery(property, filter.Operator, filter.Values.First(),filter.Values.Last());
                 }
             }
             return query;
         }
 
-        public static bool Validate(this object obj, Filters filter)
+        private static IQueryable<T> CreateQuery<T>(this IQueryable<T> query, string propertyName, Operator @operator, params string[] propertyValue) where T : class, new()
         {
-            bool ret = true;
-            if(obj.GetType().GetProperty(filter.Attribute) == null)
+            switch (@operator)
             {
-                return false;
+                case Operator.Between:
+                    query = query.Where($"{propertyName} >= {propertyValue[0]} and {propertyName} <= {propertyValue[1]}");
+                    break;
+                case Operator.Equals:
+                    query = query.Where($"{propertyName} == {propertyValue[0]}");
+                    break;
+                case Operator.GreaterThan:
+                    query = query.Where($"{propertyName} > {propertyValue[0]}");
+                    break;
+                case Operator.GreaterThanOrEquals:
+                    query = query.Where($"{propertyName} >= {propertyValue[0]}");
+                    break;
+                case Operator.In:
+                    query = query.Where($"{propertyName}.Contains(\"{propertyValue[0]}\")");
+                    break;
+                case Operator.LowerThan:
+                    query = query.Where($"{propertyName} < {propertyValue[0]}");
+                    break;
+                case Operator.LowerThanOrEuqals:
+                    query = query.Where($"{propertyName} <= {propertyValue[0]}");
+                    break;
+                case Operator.NotBetween:
+                    query = query.Where($"{propertyName} >= {propertyValue[0]} and {propertyName} <= {propertyValue[1]}");
+                    break;
+                case Operator.NotEquals:
+                    query = query.Where($"{propertyName} != {propertyValue[0]}");
+                    break;
+                case Operator.NotIn:
+                    query = query.Where($"!{propertyName}.Contains(\"{propertyValue[0]}\")");
+                    break;
             }
-
+            return query;
+        }
+        private static IQueryable<T> CreateQuery<T>(this IQueryable<T> query, string propertyName, Operator @operator, params int[] propertyValue) where T : class, new()
+        {
+            switch (@operator)
+            {
+                case Operator.Between:
+                    query = query.Where($"ID >= 1");
+                    query = query.Where($"ID <= 100");
+                    break;
+                case Operator.Equals:
+                    query = query.Where($"{propertyName} == {propertyValue}");
+                    break;
+                case Operator.GreaterThan:
+                    query = query.Where($"{propertyName} > {propertyValue}");
+                    break;
+                case Operator.GreaterThanOrEquals:
+                    query = query.Where($"{propertyName} >= {propertyValue}");
+                    break;
+                case Operator.In:
+                    query = query.Where($"{propertyName}.Contains(\"{propertyValue}\")");
+                    break;
+                case Operator.LowerThan:
+                    query = query.Where($"{propertyName} < {propertyValue}");
+                    break;
+                case Operator.LowerThanOrEuqals:
+                    query = query.Where($"{propertyName} <= {propertyValue}");
+                    break;
+                case Operator.NotBetween:
+                    break;
+                case Operator.NotEquals:
+                    query = query.Where($"{propertyName} != {propertyValue}");
+                    break;
+                case Operator.NotIn:
+                    query = query.Where($"!{propertyName}.Contains(\"{propertyValue}\")");
+                    break;
+            }
+            return query;
+        }
+        private static IQueryable<T> CreateQuery<T>(this IQueryable<T> query, string propertyName, Operator @operator, params double[] propertyValue) where T : class, new()
+        {
+            switch (@operator)
+            {
+                case Operator.Between:
+                    query = query.Where($"{propertyName} >= {propertyValue[0]} and {propertyName} <= {propertyValue[1]}");
+                    break;
+                case Operator.Equals:
+                    query = query.Where($"{propertyName} == {propertyValue}");
+                    break;
+                case Operator.GreaterThan:
+                    query = query.Where($"{propertyName} > {propertyValue}");
+                    break;
+                case Operator.GreaterThanOrEquals:
+                    query = query.Where($"{propertyName} >= {propertyValue}");
+                    break;
+                case Operator.In:
+                    query = query.Where($"{propertyName}.Contains(\"{propertyValue}\")");
+                    break;
+                case Operator.LowerThan:
+                    query = query.Where($"{propertyName} < {propertyValue}");
+                    break;
+                case Operator.LowerThanOrEuqals:
+                    query = query.Where($"{propertyName} <= {propertyValue}");
+                    break;
+                case Operator.NotBetween:
+                    break;
+                case Operator.NotEquals:
+                    query = query.Where($"{propertyName} != {propertyValue}");
+                    break;
+                case Operator.NotIn:
+                    query = query.Where($"!{propertyName}.Contains(\"{propertyValue}\")");
+                    break;
+            }
+            return query;
+        }
+        private static bool Validate(this object obj, Filters filter)
+        {
+            if (obj.GetType().GetProperty(filter.Attribute) == null)
+                return false;
             if (filter.Values.Count() == 0)
                 return false;
-            if(filter.Values.Count() == 1)
+            if (filter.Values.Count() == 1)
+                return obj.ValidateProperty(filter.Attribute, filter.Values.First());
+            else //Multi value in filter
             {
-                var type = obj.GetType().GetProperty(filter.Attribute).PropertyType;
-                if(!type.TryParse(filter.Values.First()))
+                foreach (string value in filter.Values)
                 {
-                    return false;
+                    if (!obj.ValidateProperty(filter.Attribute, value))
+                        return false;
                 }
+            }
+
+            return true;
+        }
+
+        private static bool ValidateProperty(this object obj, string propertyName, string propertyValue)
+        {
+            var type = obj.GetType().GetProperty(propertyName).PropertyType;
+            var underlyingType = Nullable.GetUnderlyingType(type);
+            if (underlyingType != null)
+                type = underlyingType;
+            string value;
+            // string "1" can't convert to bool
+            if (type == typeof(bool))
+            {
+                value = propertyValue == "1" ? "true" : propertyValue == "false" ? "false" : propertyValue;
             }
             else
             {
-
+                value = propertyValue;
             }
 
-            return ret;
-        }
-        private static bool TryParse(this Type type, string value)
-        {
-            if(type == typeof(Int32))
+            if (ValidateType(value, type))
             {
-                if (Int32.TryParse(value, out int result))
-                    return true;
+                return true;
             }
             return false;
+        }
+        private static bool ValidateType(object obj, Type type)
+        {
+            try
+            {
+                var parsedValue = System.Convert.ChangeType(obj, type);
+                return true;
+            }
+            catch { return false; }
         }
     }
 }
